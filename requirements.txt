@@ -1,0 +1,84 @@
+# ============================================================================
+# Local Brain RAG - Requirements
+# Optimized for NVIDIA RTX 4060 (8GB VRAM) with CUDA 12.x
+# ============================================================================
+
+# IMPORTANT: Install PyTorch with CUDA support FIRST, before other packages:
+# pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+#
+# For CUDA 11.8, use: https://download.pytorch.org/whl/cu118
+# Verify installation: python -c "import torch; print(torch.cuda.is_available())"
+
+# Core Deep Learning (Install separately as shown above)
+# torch>=2.1.0
+# torchvision>=0.16.0
+# torchaudio>=2.1.0
+
+# LangChain Ecosystem
+langchain>=0.1.0
+langchain-community>=0.0.20
+langchain-core>=0.1.23
+
+# LLM Backend
+ollama>=0.1.0
+
+# Vector Store
+chromadb>=0.4.22
+# ChromaDB dependencies
+pydantic>=2.0.0
+hnswlib>=0.8.0
+
+# Embeddings
+sentence-transformers>=2.3.0
+transformers>=4.36.0
+# Ensure CUDA acceleration for sentence-transformers
+
+# Document Processing
+pypdf>=3.17.0
+PyPDF2>=3.0.1
+pdfplumber>=0.10.3
+python-docx>=1.1.0
+python-magic-bin>=0.4.14; sys_platform == 'win32'
+python-magic>=0.4.27; sys_platform != 'win32'
+
+# Text Processing
+tiktoken>=0.5.2
+nltk>=3.8.1
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+
+# Configuration Management
+pyyaml>=6.0.1
+python-dotenv>=1.0.0
+
+# CLI and UI
+click>=8.1.7
+rich>=13.7.0
+tqdm>=4.66.0
+
+# API (Optional - for future REST API)
+fastapi>=0.108.0
+uvicorn>=0.25.0
+
+# Utilities
+numpy>=1.24.0
+pandas>=2.1.0
+loguru>=0.7.2
+
+# Development Tools (Optional)
+# pytest>=7.4.0
+# black>=23.12.0
+# flake8>=7.0.0
+# mypy>=1.8.0
+
+# Jupyter Notebooks
+# jupyter>=1.0.0
+# ipykernel>=6.28.0
+# matplotlib>=3.8.0
+
+# ============================================================================
+# Installation Order:
+# 1. pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+# 2. pip install -r requirements.txt
+# 3. Verify CUDA: python -c "import torch; print(f'CUDA: {torch.cuda.is_available()}')"
+# ============================================================================

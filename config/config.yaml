@@ -1,0 +1,135 @@
+# ============================================================================
+# Local Brain RAG - Configuration
+# Optimized for NVIDIA RTX 4060 (8GB VRAM)
+# ============================================================================
+
+# LLM Configuration (Ollama Backend)
+llm:
+  provider: "ollama"
+  model_name: "llama3"  # Alternatives: "mistral", "llama2", "codellama"
+  base_url: "http://localhost:11434"
+  temperature: 0.7
+  top_p: 0.9
+  max_tokens: 2048
+
+  # VRAM Optimization: Ollama runs as separate service
+  # Expected VRAM usage: 4-6GB (depending on model)
+  ollama_options:
+    num_gpu: 1  # Use GPU acceleration
+    num_thread: 4  # CPU threads for hybrid processing
+
+# Embedding Model Configuration (Sentence-Transformers)
+embeddings:
+  model_name: "all-MiniLM-L6-v2"  # Fast, 384 dimensions
+  # Alternative options:
+  # - "all-mpnet-base-v2" (768 dim, better quality, slower)
+  # - "paraphrase-MiniLM-L3-v2" (384 dim, fastest)
+  # - "multi-qa-MiniLM-L6-cos-v1" (384 dim, optimized for QA)
+
+  device: "cuda"  # CRITICAL: Force CUDA for RTX 4060 acceleration
+  normalize_embeddings: true
+  batch_size: 32  # Adjust based on VRAM (32 is safe for 8GB)
+
+  # Expected VRAM usage: 1-2GB
+  # Encoding speed on RTX 4060: ~1000-2000 docs/sec
+
+# Vector Store Configuration (ChromaDB)
+vectorstore:
+  type: "chromadb"
+  persist_directory: "./data/vectorstore"
+  collection_name: "local_brain_documents"
+
+  # Distance metric for similarity search
+  distance_metric: "cosine"  # Options: "cosine", "l2", "ip"
+
+  # Search parameters
+  search_type: "similarity"  # Options: "similarity", "mmr"
+  search_kwargs:
+    k: 4  # Number of documents to retrieve
+    fetch_k: 20  # For MMR diversity (if search_type: "mmr")
+    lambda_mult: 0.5  # MMR diversity vs relevance (0=diverse, 1=relevant)
+
+# Document Processing Configuration
+document_processing:
+  # Text Splitting Strategy
+  chunk_size: 1000  # Characters per chunk (balance: context vs specificity)
+  chunk_overlap: 200  # Overlap to preserve context across chunks
+
+  # Separators (in priority order)
+  separators:
+    - "\n\n"  # Paragraph breaks
+    - "\n"    # Line breaks
+    - ". "    # Sentences
+    - " "     # Words
+
+  # Document loaders
+  supported_formats:
+    - "pdf"
+    - "txt"
+    - "md"
+    - "docx"
+
+  # PDF specific settings
+  pdf_extraction:
+    mode: "pdfplumber"  # Options: "pdfplumber", "pypdf", "pymupdf"
+    extract_images: false  # Set true for OCR (requires tesseract)
+
+# RAG Chain Configuration
+rag:
+  # Prompt template
+  system_prompt: |
+    You are a helpful AI assistant with access to a knowledge base of documents.
+    Use the following context to answer the user's question.
+    If you cannot find the answer in the context, say so clearly.
+    Always cite which document or section your answer comes from when possible.
+
+    Context: {context}
+
+    Question: {question}
+
+    Answer:
+
+  # Chain type
+  chain_type: "stuff"  # Options: "stuff", "map_reduce", "refine", "map_rerank"
+
+  # Return source documents
+  return_source_documents: true
+  verbose: false
+
+# Logging Configuration
+logging:
+  level: "INFO"  # Options: "DEBUG", "INFO", "WARNING", "ERROR"
+  format: "<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan> - <level>{message}</level>"
+  log_file: "./logs/local_brain.log"
+  rotation: "10 MB"
+  retention: "1 week"
+
+# Performance Tuning (RTX 4060 Specific)
+performance:
+  # CUDA settings
+  cuda_device: 0  # GPU index (0 for single GPU)
+  enable_cuda_graphs: false  # Advanced optimization (experimental)
+
+  # Memory management
+  clear_cache_after_embedding: true  # Free VRAM after batch operations
+  pin_memory: true  # Faster CPU-GPU transfers
+
+  # Batch processing
+  ingest_batch_size: 100  # Documents to process before committing to DB
+
+# Paths
+paths:
+  data_dir: "./data"
+  raw_documents: "./data/raw"
+  processed_documents: "./data/processed"
+  vectorstore: "./data/vectorstore"
+  logs: "./logs"
+
+# ============================================================================
+# VRAM Allocation Summary (8GB Total):
+# - Ollama LLM Service: 4-6GB (managed externally)
+# - Embedding Model (CUDA): 1-2GB (managed by this app)
+# - ChromaDB Operations: <500MB (CPU/RAM)
+# - PyTorch Overhead: ~500MB
+# - Available Buffer: 1-2GB
+# ============================================================================

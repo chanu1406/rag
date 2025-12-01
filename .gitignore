@@ -1,0 +1,72 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+.claude/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Data
+data/raw/*
+data/processed/*
+data/vectorstore/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/vectorstore/.gitkeep
+
+# Logs
+logs/
+*.log
+
+# Environment
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+# Note: keeping notebooks/ directory tracked for templates
+
+# PyTorch
+*.pth
+*.pt
+*.ckpt
+
+# Cache
+.cache/
+*.cache
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# OS
+Thumbs.db
