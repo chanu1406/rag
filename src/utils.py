@@ -67,7 +67,7 @@ def check_cuda_available() -> bool:
         True if CUDA is available, False otherwise
     """
     if not torch.cuda.is_available():
-        print("⚠️  WARNING: CUDA is not available!")
+        print("[WARNING] CUDA is not available!")
         print("   The application will run on CPU, which will be significantly slower.")
         print("   Please ensure:")
         print("   1. NVIDIA GPU drivers are installed")
@@ -76,7 +76,7 @@ def check_cuda_available() -> bool:
         return False
 
     # CUDA is available - print detailed information
-    print("✓ CUDA is available")
+    print("[OK] CUDA is available")
     print(f"  GPU Device: {torch.cuda.get_device_name(0)}")
     print(f"  CUDA Version: {torch.version.cuda}")
     print(f"  PyTorch Version: {torch.__version__}")
@@ -88,9 +88,9 @@ def check_cuda_available() -> bool:
     # Check if this is the expected RTX 4060
     gpu_name = torch.cuda.get_device_name(0)
     if "4060" in gpu_name:
-        print(f"  ✓ Detected RTX 4060 - optimal configuration loaded")
+        print(f"  [OK] Detected RTX 4060 - optimal configuration loaded")
     else:
-        print(f"  ⚠️  Expected RTX 4060, but detected: {gpu_name}")
+        print(f"  [WARNING] Expected RTX 4060, but detected: {gpu_name}")
         print(f"     The configuration is optimized for 8GB VRAM.")
 
     # Get compute capability
