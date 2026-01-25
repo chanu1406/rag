@@ -50,6 +50,11 @@ logs/
 # Environment
 .env
 
+# Documentation (Agent Context)
+CONTEXT.md
+AGENTCONTEXT.md
+README.md
+
 # Jupyter
 .ipynb_checkpoints/
 # Note: keeping notebooks/ directory tracked for templates
