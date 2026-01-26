@@ -1,8 +1,8 @@
 """
 VRAM Utilities for Local Brain RAG.
 
-Per CONTEXT.md: RTX 4060 has strict 8GB VRAM limit.
-Per AGENTCONTEXT.md: Explicit monitoring, predictable performance.
+Optimized for RTX 4060 (8GB VRAM) constraints.
+Provides explicit monitoring and predictable performance.
 """
 
 import torch
@@ -167,7 +167,7 @@ class VRAMMonitor:
     Context manager for monitoring VRAM usage during operations.
     Useful for profiling and optimization on RTX 4060.
     
-    Per AGENTCONTEXT.md: Explicit, inspectable performance metrics.
+    Provides explicit, inspectable performance metrics.
     """
     
     def __init__(self, operation_name: str):

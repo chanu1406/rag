@@ -11,7 +11,7 @@ class RAGEngine:
     """
     Orchestrates Retrieval-Augmented Generation.
     
-    Per AGENTCONTEXT.md:
+    Features:
     - Explicit failure modes (Ollama check)
     - Clear data flow (Retrieve -> Prompt -> Generate)
     - Must cite sources
@@ -30,7 +30,7 @@ class RAGEngine:
             model=config.llm.model,
             base_url=config.llm.base_url,
             temperature=config.llm.temperature,
-            num_predict=config.llm.context_window  # Respect hardware limit
+            num_predict=config.llm.context_window
         )
         
         # Build prompt template
@@ -56,7 +56,7 @@ class RAGEngine:
             return False
     
     def _build_prompt(self) -> str:
-        """Construct system prompt per AGENTCONTEXT.md standards."""
+        """Construct system prompt."""
         return """You are a precision information retrieval assistant.
 
 Context from documents:

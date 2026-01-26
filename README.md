@@ -1,21 +1,21 @@
-# Local Brain
+# Local Brain RAG
 
 A high-performance, privacy-focused Retrieval-Augmented Generation (RAG) system designed to run 100% locally. This project allows users to chat with personal documents (PDFs, Markdown, Text) without any data leaving the machine.
 
 ## Project Overview
 
-*   **Objective**: Local semantic search and generation.
-*   **Privacy**: Zero external API calls (unless explicitly configured).
-*   **Hardware Target**: Optimized for NVIDIA RTX 4060 (8GB VRAM).
-*   **Tech Stack**: Python, LangChain, ChromaDB, Ollama.
+-   **Objective**: Local semantic search and generation.
+-   **Privacy**: Zero external API calls.
+-   **Hardware Target**: Optimized for NVIDIA RTX 4060 (8GB VRAM).
+-   **Tech Stack**: Python, LangChain, ChromaDB, Ollama.
 
 ## Prerequisites
 
-*   **Python 3.11 or 3.12** (Python 3.13 is NOT supported due to ML ecosystem limitations)
-*   **Ollama**: Must be installed and running.
-    *   `ollama pull llama3` (Logic)
-    *   `ollama pull nomic-embed-text` (Embeddings)
-*   **CUDA Toolkit**: Recommended for GPU acceleration (RTX 4060).
+-   **Python 3.11 or 3.12**
+-   **Ollama**: Must be installed and running.
+    -   `ollama pull llama3`
+    -   `ollama pull nomic-embed-text`
+-   **CUDA Toolkit**: Required for GPU acceleration.
 
 ## Quick Start
 
@@ -26,17 +26,10 @@ Run the automated setup script:
 .\setup_env.ps1
 ```
 
-This will:
-- Check for Python 3.11/3.12 (or prompt you to install it)
-- Create a virtual environment
-- Install all dependencies
-
-### 2. Manual Setup (Alternative)
-
-If you prefer manual installation:
+### 2. Manual Setup
 
 ```powershell
-# Create venv with Python 3.11
+# Create venv
 py -3.11 -m venv .venv
 .venv\Scripts\Activate.ps1
 
@@ -47,42 +40,26 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
 pip install -r requirements.txt
 ```
 
-### 3. Install Ollama
-
-Download and install from: https://ollama.com/download
-
-```powershell
-ollama pull llama3
-```
-
-### 4. Ingest Documents
+### 3. Ingest Documents
 
 ```powershell
 python main.py ingest ./data/documents
 ```
 
-### 5. Start Chat
+### 4. Start Chat
 
 ```powershell
 python main.py chat
 ```
 
-## Hardware Limitations
+## Hardware Configuration
 
-This system is strictly tuned for **8GB VRAM** budgets:
-*   Retriever: ~1GB overhead
-*   LLM (4-bit): ~5-6GB
-*   Leaves ~1GB buffer for system operations
-
-Do not attempt to run larger unquantized models without upgrading hardware.
+This system is tuned for **8GB VRAM**:
+-   Retriever: ~1GB overhead
+-   LLM (4-bit): ~5-6GB
+-   Buffer: ~1GB
 
 ## Troubleshooting
 
-### Python Version Issues
-If you see compilation errors (`Microsoft Visual C++ required`, `Rust compiler missing`), you're likely using Python 3.13. **Downgrade to Python 3.11 or 3.12**.
-
-### CUDA Not Available
-Ensure NVIDIA drivers and CUDA toolkit are installed. Verify with:
-```powershell
-python -c "import torch; print(torch.cuda.is_available())"
-```
+-   **CUDA Not Available**: Ensure NVIDIA drivers and CUDA toolkit are installed.
+-   **Python Version**: Use Python 3.11 or 3.12. Python 3.13 is not supported.

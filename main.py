@@ -38,11 +38,11 @@ def ingest(source: str, reset: bool):
         config = load_config()
         setup_logging(config)
         
-        # Check CUDA availability (per CONTEXT.md: RTX 4060 optimization)
+        # Check CUDA availability
         cuda_available = check_cuda_available()
         if not cuda_available and config.embedding.device == "cuda":
-            console.print("[yellow]⚠️  CUDA not available but config requires 'cuda' device[/yellow]")
-            console.print("[yellow]   Embeddings will run on CPU (significantly slower)[/yellow]")
+            console.print("[yellow]Notice: CUDA not available but config requires 'cuda' device[/yellow]")
+            console.print("[yellow]   Embeddings will run on CPU (slower performance)[/yellow]")
         
         console.print(Panel("[bold]Document Ingestion[/bold]"))
         
@@ -119,14 +119,14 @@ def chat():
                 question = Prompt.ask("[bold cyan]You[/bold cyan]")
                 
                 if question.lower() == "/exit":
-                    console.print("[yellow]Goodbye![/yellow]")
+                    console.print("[yellow]Exiting application.[/yellow]")
                     break
                 elif question.lower() == "/help":
                     console.print("Available commands:\n  /exit - Quit\n  /help - This message")
                     continue
                 
                 # Query
-                with console.status("[bold green]Thinking...[/bold green]"):
+                with console.status("[bold green]Processing...[/bold green]"):
                     result = rag_engine.query(question)
                 
                 # Display answer
@@ -137,11 +137,11 @@ def chat():
                 if result["sources"]:
                     console.print("\n[dim]Sources:[/dim]")
                     for src in result["sources"]:
-                        console.print(f"  • {src['filename']}")
+                        console.print(f"  - {src['filename']}")
                 console.print()
                 
             except KeyboardInterrupt:
-                console.print("\n[yellow]Goodbye![/yellow]")
+                console.print("\n[yellow]Exiting application.[/yellow]")
                 break
             except Exception as e:
                 console.print(f"[red]Error: {e}[/red]")

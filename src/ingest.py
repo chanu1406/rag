@@ -13,7 +13,7 @@ class DocumentLoader:
     """
     Handles loading and preprocessing of documents from various formats.
     
-    Adheres to AGENTCONTEXT.md:
+    Features:
     - Deterministic chunking
     - Explicit failure modes
     - Strict config usage

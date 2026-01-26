@@ -13,8 +13,8 @@ class VectorManager:
     """
     Manages ChromaDB vector store and embedding operations.
     
-    Adheres to AGENTCONTEXT.md:
-    - Enforces CUDA usage for embeddings (RTX 4060).
+    Features:
+    - Enforces CUDA usage for embeddings.
     - Uses explicit configuration.
     """
  
@@ -49,7 +49,7 @@ class VectorManager:
         """
         Embed and store documents in ChromaDB with VRAM monitoring.
         
-        Per CONTEXT.md: Track VRAM usage for RTX 4060 8GB constraint.
+        Tracks VRAM usage for hardware constraints.
         """
         if not documents:
             logger.warning("No documents to add.")
