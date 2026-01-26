@@ -14,6 +14,7 @@ from src.logger import setup_logging, logger
 from src.ingest import DocumentLoader
 from src.vectorstore import VectorManager
 from src.rag import RAGEngine
+from src.utils import check_cuda_available
 
 console = Console()
 
@@ -36,6 +37,12 @@ def ingest(source: str, reset: bool):
         # Load config
         config = load_config()
         setup_logging(config)
+        
+        # Check CUDA availability (per CONTEXT.md: RTX 4060 optimization)
+        cuda_available = check_cuda_available()
+        if not cuda_available and config.embedding.device == "cuda":
+            console.print("[yellow]⚠️  CUDA not available but config requires 'cuda' device[/yellow]")
+            console.print("[yellow]   Embeddings will run on CPU (significantly slower)[/yellow]")
         
         console.print(Panel("[bold]Document Ingestion[/bold]"))
         

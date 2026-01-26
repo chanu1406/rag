@@ -1,10 +1,12 @@
 from typing import List, Any, Optional, Dict
-from langchain_community.vectorstores import Chroma
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from pathlib import Path
+from langchain_chroma import Chroma
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.retrievers import BM25Retriever
 from langchain_core.documents import Document
 from src.config import AppConfig
 from src.logger import logger
+from src.utils import VRAMMonitor
 import shutil
 
 class VectorManager:
@@ -15,8 +17,8 @@ class VectorManager:
     - Enforces CUDA usage for embeddings (RTX 4060).
     - Uses explicit configuration.
     """
-
-    def __init__(self, config: AppConfig):
+ 
+    def __init__(self, config: AppConfig): 
         self.config = config
         self.persist_dir = str(config.system.persist_dir)
         
@@ -45,7 +47,9 @@ class VectorManager:
 
     def add_documents(self, documents: List[Document]) -> List[str]:
         """
-        Embed and store documents in ChromaDB.
+        Embed and store documents in ChromaDB with VRAM monitoring.
+        
+        Per CONTEXT.md: Track VRAM usage for RTX 4060 8GB constraint.
         """
         if not documents:
             logger.warning("No documents to add.")
@@ -53,15 +57,16 @@ class VectorManager:
 
         logger.info(f"Adding {len(documents)} document chunks to vector store...")
         
-        # Add to Chroma (processing happens here via HuggingFaceEmbeddings)
-        try:
-            ids = self.vectorstore.add_documents(documents)
-            self.vectors = self.vectorstore # storage persists automatically in newer versions
-            logger.success(f"Successfully stored {len(ids)} vectors.")
-            return ids
-        except Exception as e:
-            logger.error(f"Failed to add documents to ChromaDB: {e}")
-            raise e
+        # Monitor VRAM during embedding (most intensive operation)
+        with VRAMMonitor("Document Embedding"):
+            try:
+                ids = self.vectorstore.add_documents(documents)
+                self.vectors = self.vectorstore
+                logger.success(f"Successfully stored {len(ids)} vectors.")
+                return ids
+            except Exception as e:
+                logger.error(f"Failed to add documents to ChromaDB: {e}")
+                raise e
 
     def build_keyword_index(self, documents: List[Document]):
         """
@@ -73,24 +78,36 @@ class VectorManager:
 
     def search(self, query: str) -> List[Document]:
         """
-        Primary search interface. 
-        Currently mostly semantic, prepared for Hybrid.
+        Primary search interface with VRAM monitoring.
+        Currently semantic search, prepared for hybrid.
         """
         k = self.config.retrieval.k_retrieved
         
-        # Semantic Search (Vector)
         logger.debug(f"Executing semantic search for: '{query}' (k={k})")
-        results = self.vectorstore.similarity_search(query, k=k)
         
-        # TODO: Phase 2 - Merge with self.bm25.get_relevant_documents(query)
-        # TODO: Phase 2 - Apply FlashRank re-ranking here
+        # Monitor VRAM during query embedding
+        with VRAMMonitor("Query Embedding"):
+            results = self.vectorstore.similarity_search(query, k=k)
+        
+        # Note: Hybrid search (BM25 + vector) and re-ranking not yet implemented
+        # See implementation_plan.md for future enhancements
         
         return results
 
     def clear(self):
-        """Nu-uke the vector store."""
+        """Clear the vector store and recreate directory."""
         logger.warning(f"Deleting vector store at {self.persist_dir}")
-        self.vectorstore = None
+        
+        # Delete entire directory to fully clear
         shutil.rmtree(self.persist_dir, ignore_errors=True)
-        self.config.system.validate_paths(self.persist_dir) # Recreate dir
-        self._init_chroma()
+        
+        # Recreate directory
+        Path(self.persist_dir).mkdir(parents=True, exist_ok=True)
+        
+        # Reinitialize ChromaDB with fresh instance
+        self.vectorstore = Chroma(
+            persist_directory=self.persist_dir,
+            embedding_function=self.embeddings,
+            collection_metadata={"hnsw:space": "cosine"}
+        )
+        logger.debug(f"ChromaDB reinitialized at {self.persist_dir}")

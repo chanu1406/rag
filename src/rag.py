@@ -41,15 +41,19 @@ class RAGEngine:
     
     def _check_ollama(self):
         """Fail fast if Ollama is not running."""
-        try:
-            response = requests.get(f"{self.config.llm.base_url}/api/tags", timeout=2)
-            if response.status_code != 200:
-                raise ConnectionError("Ollama API returned non-200 status")
-            logger.debug("Ollama service is reachable")
-        except requests.exceptions.RequestException as e:
+        if not self._is_ollama_reachable():
             logger.error(f"Cannot reach Ollama at {self.config.llm.base_url}")
             logger.error("Fix: Ensure Ollama is running (run `ollama serve`)")
-            raise RuntimeError("Ollama service not available") from e
+            raise RuntimeError("Ollama service not available")
+        logger.debug("Ollama service is reachable")
+    
+    def _is_ollama_reachable(self) -> bool:
+        """Check if Ollama API is reachable."""
+        try:
+            response = requests.get(f"{self.config.llm.base_url}/api/tags", timeout=2)
+            return response.status_code == 200
+        except requests.exceptions.RequestException:
+            return False
     
     def _build_prompt(self) -> str:
         """Construct system prompt per AGENTCONTEXT.md standards."""

@@ -1,10 +1,13 @@
 # Core
 langchain>=0.3.0           # Orchestration
 langchain-community>=0.3.0 # Community integrations
+langchain-chroma>=0.1.0     # Chroma vector store (updated)
+langchain-huggingface>=0.1.0 # HuggingFace embeddings (updated)
 chromadb==0.4.24            # Vector Database (Local)
 sentence-transformers>=3.0.0 # Information Retrieval
 pydantic>=2.10.0            # Validation
 pydantic-settings>=2.7.0    # Config Management
+numpy<2.0                   # Pin numpy to 1.x for ChromaDB compatibility
 
 # LLM Interface
 ollama==0.1.8               # Interface to local LLM
@@ -23,3 +26,7 @@ loguru==0.7.2               # Logging
 pyyaml==6.0.1               # Config parsing
 click==8.1.7                # CLI
 rich==13.7.1                # Terminal UI
+
+# Testing
+pytest>=8.0.0               # Test framework
+pytest-cov>=4.1.0           # Coverage reporting
