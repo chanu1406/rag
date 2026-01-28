@@ -8,6 +8,7 @@ from langchain_community.document_loaders import (
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from src.config import AppConfig
 from src.logger import logger
+from src.extractor import MetadataExtractor
 
 class DocumentLoader:
     """
@@ -17,6 +18,7 @@ class DocumentLoader:
     - Deterministic chunking
     - Explicit failure modes
     - Strict config usage
+    - Intelligent Metadata Extraction (Ollama)
     """
 
     def __init__(self, config: AppConfig):
@@ -24,6 +26,9 @@ class DocumentLoader:
         self.chunk_size = config.retrieval.chunk_size
         self.chunk_overlap = config.retrieval.chunk_overlap
         self.valid_extensions = set(config.ingestion.valid_extensions)
+        
+        # Initialize Extractor
+        self.extractor = MetadataExtractor(config)
         
         # Initialize splitter deterministically
         self.text_splitter = RecursiveCharacterTextSplitter(
@@ -51,10 +56,19 @@ class DocumentLoader:
             loader = self._get_loader(file_path, ext)
             documents = loader.load()
             
-            # Normalize metadata
+            if not documents:
+                return []
+
+            # Extract Metadata using LLM (only needs first chunk of text)
+            full_text = "\n".join([doc.page_content for doc in documents])
+            extracted_metadata = self.extractor.extract(full_text, file_path.name)
+            
+            # Application: Normalize metadata onto all docs
             for doc in documents:
                 doc.metadata["source"] = str(file_path.absolute())
                 doc.metadata["filename"] = file_path.name
+                # Merge extracted metadata
+                doc.metadata.update(extracted_metadata)
                 
             return documents
         except Exception as e:

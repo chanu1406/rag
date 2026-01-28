@@ -1,0 +1,33 @@
+    def _rerank(self, query: str, documents: List[Document]) -> List[Document]:
+        """
+        Re-rank documents using FlashRank cross-encoder.
+        
+        FlashRank uses a cross-encoder model to score query-document pairs,
+        providing more accurate relevance than embedding similarity alone.
+        """
+        if not documents:
+            return documents
+        
+        logger.debug(f"Re-ranking {len(documents)} documents with FlashRank...")
+        
+        # Prepare passages for FlashRank
+        passages = [
+            {"text": doc.page_content, "meta": doc.metadata}
+            for doc in documents
+        ]
+        
+        # Create rerank request
+        rerank_request = RerankRequest(query=query, passages=passages)
+        
+        # Get reranked results
+        results = self.reranker.rerank(rerank_request)
+        
+        # Reconstruct documents in new order
+        reranked_docs = []
+        for result in results[:self.config.retrieval.k_final]:
+            # Find original document by matching metadata
+            orig_doc = documents[result["corpus_id"]]
+            reranked_docs.append(orig_doc)
+        
+        logger.debug(f"Re-ranking complete: Top {len(reranked_docs)} kept")
+        return reranked_docs

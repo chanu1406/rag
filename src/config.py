@@ -37,9 +37,14 @@ class RetrievalConfig(BaseModel):
     k_final: int
     use_reranker: bool
 
+class ExtractionConfig(BaseModel):
+    enabled: bool = True
+    model: str = "llama3"
+
 class IngestionConfig(BaseModel):
     valid_extensions: List[str]
     ignore_patterns: List[str]
+    extraction: ExtractionConfig = Field(default_factory=ExtractionConfig)
 
 class AppConfig(BaseModel):
     system: SystemConfig

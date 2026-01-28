@@ -32,3 +32,6 @@ ingestion:
   ignore_patterns:
     - "__pycache__"
     - ".git"
+  extraction:
+    enabled: false       # Disabled: 850x overhead with no current value (filtering not implemented)
+    model: "llama3"
