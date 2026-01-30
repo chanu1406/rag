@@ -1,35 +1,26 @@
-<p align="center">
-  <h1 align="center">🧠 Local Brain RAG</h1>
-  <p align="center">
-    <strong>Privacy-First Document Intelligence</strong>
-  </p>
-  <p align="center">
-    A high-performance Retrieval-Augmented Generation system that runs 100% locally.<br/>
-    Chat with your documents without any data leaving your machine.
-  </p>
-</p>
+# Local RAG
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Python-3.11+-blue?style=flat-square&logo=python" alt="Python"/>
-  <img src="https://img.shields.io/badge/LangChain-0.3+-green?style=flat-square" alt="LangChain"/>
-  <img src="https://img.shields.io/badge/Ollama-Local%20LLM-orange?style=flat-square" alt="Ollama"/>
-  <img src="https://img.shields.io/badge/ChromaDB-Vector%20Store-purple?style=flat-square" alt="ChromaDB"/>
-</p>
+A Retrieval-Augmented Generation system that runs entirely on your local machine. Chat about your documents without any data leaving your machine.
+
+![Python](https://img.shields.io/badge/Python-3.11+-blue?style=flat-square&logo=python)
+![LangChain](https://img.shields.io/badge/LangChain-0.3+-green?style=flat-square)
+![Ollama](https://img.shields.io/badge/Ollama-Local%20LLM-orange?style=flat-square)
+![ChromaDB](https://img.shields.io/badge/ChromaDB-Vector%20Store-purple?style=flat-square)
 
 ---
 
-## ✨ Features
+## Features
 
-- **🔒 Privacy First** — Zero external API calls. All processing happens locally.
-- **⚡ GPU Accelerated** — CUDA-powered embeddings for fast vectorization.
-- **🔍 Hybrid Search** — Combines semantic (vector) + keyword (BM25) retrieval with Reciprocal Rank Fusion.
-- **🎯 Re-ranking** — FlashRank cross-encoder for improved relevance.
-- **📄 Multi-Format** — Supports PDF, Markdown, Text, and Word documents.
-- **🛠️ Fully Configurable** — YAML-based configuration for all parameters.
+- **Privacy** — Zero external API calls. All processing happens locally.
+- **GPU Accelerated** — CUDA-powered embeddings for fast vectorization.
+- **Hybrid Search** — Combines semantic (vector) + keyword (BM25) retrieval with Reciprocal Rank Fusion.
+- **Re-ranking** — FlashRank cross-encoder for improved relevance.
+- **Multi-Format** — Supports PDF, Markdown, Text, and Word documents.
+- **Configurable** — YAML-based configuration for all parameters.
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -41,8 +32,8 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/local-brain-rag.git
-cd local-brain-rag
+git clone https://github.com/yourusername/local-rag.git
+cd local-rag
 
 # Create virtual environment
 python -m venv .venv
@@ -92,7 +83,7 @@ python main.py chat
 
 ---
 
-## 📖 Usage
+## Usage
 
 ### CLI Commands
 
@@ -111,7 +102,7 @@ python main.py chat
 
 ---
 
-## ⚙️ Configuration
+## Configuration
 
 All settings are managed in `config/config.yaml`:
 
@@ -133,38 +124,20 @@ retrieval:
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
-┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│  Documents  │───▶│  Ingestion  │───▶│   Chunks    │
-└─────────────┘    └─────────────┘    └──────┬──────┘
-                                             │
-                   ┌─────────────────────────▼──────────────────────────┐
-                   │                    Indexing                        │
-                   │  ┌─────────────┐              ┌─────────────────┐  │
-                   │  │  Embedding  │──────────────▶│    ChromaDB    │  │
-                   │  │   (CUDA)    │              │  (Vector Store) │  │
-                   │  └─────────────┘              └─────────────────┘  │
-                   └────────────────────────────────────────────────────┘
-                                             │
-┌─────────────┐    ┌─────────────┐    ┌──────▼──────┐    ┌─────────────┐
-│    User     │───▶│   Query     │───▶│  Retrieval  │───▶│   Answer    │
-│   Question  │    │  Embedding  │    │ (Hybrid+RRF)│    │ + Sources   │
-└─────────────┘    └─────────────┘    └──────┬──────┘    └─────────────┘
-                                             │
-                                    ┌────────▼────────┐
-                                    │  Ollama (LLM)   │
-                                    │   Generation    │
-                                    └─────────────────┘
+Documents --> Ingestion --> Chunks --> Embedding (CUDA) --> ChromaDB
+
+User Question --> Query Embedding --> Retrieval (Hybrid + RRF) --> Ollama --> Answer + Sources
 ```
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
-local-brain-rag/
+local-rag/
 ├── main.py                 # CLI entry point
 ├── config/
 │   └── config.yaml         # Configuration file
@@ -183,7 +156,7 @@ local-brain-rag/
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ```bash
 # Run all tests
@@ -195,23 +168,17 @@ pytest tests/ --cov=src --cov-report=html
 
 ---
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 | Issue | Solution |
 |-------|----------|
-| **CUDA not available** | Ensure NVIDIA drivers and CUDA toolkit are installed |
-| **Ollama connection failed** | Run `ollama serve` in a separate terminal |
-| **Python version error** | Use Python 3.11 or 3.12 |
-| **Out of memory** | Reduce `k_retrieved` in config or use smaller embedding model |
+| CUDA not available | Ensure NVIDIA drivers and CUDA toolkit are installed |
+| Ollama connection failed | Run `ollama serve` in a separate terminal |
+| Python version error | Use Python 3.11 or 3.12 |
+| Out of memory | Reduce `k_retrieved` in config or use smaller embedding model |
 
 ---
 
-## 📄 License
+## License
 
 MIT License - see [LICENSE](LICENSE) for details.
-
----
-
-<p align="center">
-  Built with ❤️ for privacy-conscious AI
-</p>
