@@ -50,10 +50,10 @@ logs/
 # Environment
 .env
 
-# Documentation (Agent Context)
+# Documentation (Agent Context - not tracked)
 CONTEXT.md
 AGENTCONTEXT.md
-README.md
+AGENT_CONTEXT.md
 
 # Jupyter
 .ipynb_checkpoints/
